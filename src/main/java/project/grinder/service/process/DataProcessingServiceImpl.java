@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
 
     @Override
     public Validation validateUser(User user) {
-        Validation validation = new Validation(false, new ArrayList<String>(), user);
+        Validation validation = new Validation(true, new ArrayList<String>(), user);
         Field[] fields = user.getClass().getDeclaredFields();
         for(Field field: fields) {
             switch (field.getName()) {
@@ -43,8 +42,6 @@ public class DataProcessingServiceImpl implements DataProcessingService {
                     break;
             }
         }
-        validation.getErrors().removeIf(Objects::isNull);
-
         return validation;
     }
 
@@ -67,6 +64,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     private Validation validateId(Validation validation) {
         int id = validation.getSuggestion().getId();
         if (id < 0) {
+            validation.setValid(false);
             validation.getErrors().add(Constant.ID_ERROR_MSG);
             validation.getSuggestion().setId(Math.abs(id));
         }
@@ -76,10 +74,11 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     private Validation validateName(Validation validation) {
         String name = validation.getSuggestion().getName();
         if (!Pattern.matches("[A-Z][a-z]* [A-Z][a-z]*", name)) {
+            validation.setValid(false);
             validation.getErrors().add(Constant.NAME_ERROR_MSG);
 
             StringBuffer result = new StringBuffer();
-            List<String> filtered = Arrays.asList(name.split(" ")).stream().filter(i -> !isTitleName(i)).collect(Collectors.toList());
+            List<String> filtered = Arrays.asList(name.trim().split(" ")).stream().filter(i -> !isTitleName(i)).collect(Collectors.toList());
             for (String n: filtered) {
                 result.append(result.length() > 0 ? " " : "");
                 result.append(Character.toString(n.charAt(0)).toUpperCase());
@@ -93,6 +92,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     private Validation validatePhone(Validation validation) {
         String phone = validation.getSuggestion().getPhone();
         if (!Pattern.matches("[0-9]{10}", phone)) {
+            validation.setValid(false);
             validation.getErrors().add(Constant.PHONE_ERROR_MSG);
             validation.getSuggestion().setPhone(phone.replaceAll("[^0-9]", "").substring(0, 10));
         }
