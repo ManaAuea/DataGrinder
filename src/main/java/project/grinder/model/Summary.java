@@ -1,14 +1,16 @@
 package project.grinder.model;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Summary {
     
     private User info;
-    private List<Order> order;
+    private Map<LocalDate, List<Order>> order;
     private double totalAmount;
 
-    public Summary(User info, List<Order> order, double totalAmount) {
+    public Summary(User info, Map<LocalDate, List<Order>> order, double totalAmount) {
         this.info = info;
         this.order = order;
         this.totalAmount = totalAmount;
@@ -22,11 +24,11 @@ public class Summary {
         this.info = info;
     }
 
-    public List<Order> getOrder() {
+    public Map<LocalDate, List<Order>> getOrder() {
         return this.order;
     }
 
-    public void setOrder(List<Order> order) {
+    public void setOrder(Map<LocalDate, List<Order>> order) {
         this.order = order;
     }
 

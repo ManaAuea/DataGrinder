@@ -3,12 +3,14 @@ package project.grinder.service.transform;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -57,14 +59,21 @@ public class DataTransformationServiceImpl implements DataTransformationService 
         Map<Integer, Summary> summary =  rec.stream().collect(
             Collectors.toMap(
                 r -> r.getId(),
-                r ->  new Summary(new User(r.getId(), r.getName(), r.getPhone()), new ArrayList<Order>(), 0.0),
+                r ->  new Summary(new User(r.getId(), r.getName(), r.getPhone()), new HashMap<LocalDate, List<Order>>(), 0.0),
                 (exist, record) -> exist
             )
         );
         
         rec.forEach(r -> {
             Summary sum = summary.get(r.getId());
-            sum.getOrder().add(new Order(r.getItem(), r.getAmount(), r.getPrice(), LocalDate.parse(r.getDate(), DateTimeFormatter.ofPattern("MM-dd-yyyy"))));
+            Map<LocalDate, List<Order>> orderMap = sum.getOrder();
+            LocalDate date = LocalDate.parse(r.getDate(), DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+            Order order = new Order(r.getItem(), r.getAmount(), r.getPrice());
+            if (orderMap.containsKey(date)) {
+                orderMap.get(date).add(order);
+            } else {
+                orderMap.put(date, Stream.of(order).collect(Collectors.toList()));
+            }
             sum.setTotalAmount(sum.getTotalAmount() + (r.getPrice() * r.getAmount()));
         });
 
