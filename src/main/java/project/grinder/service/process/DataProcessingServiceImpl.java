@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ import project.grinder.model.Validation;
 
 @Service
 public class DataProcessingServiceImpl implements DataProcessingService {
+
+    final Predicate<String> nullOrEmptyString = str -> str == null || str.trim().isEmpty();
 
     @Override
     public Sorting sortInteger(List<Integer> list) {
@@ -64,18 +67,19 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     private Validation validateId(Validation validation) {
         int id = validation.getSuggestion().getId();
         if (id < 0) {
-            validation.setValid(false);
-            validation.getErrors().add(Constant.ID_ERROR_MSG);
-            validation.getSuggestion().setId(Math.abs(id));
+            assignError(validation, false, Constant.ID_ERROR_MSG);
+            validation.getSuggestion().setId(Math.abs(id)); 
         }
         return validation;
     }
 
     private Validation validateName(Validation validation) {
         String name = validation.getSuggestion().getName();
-        if (!Pattern.matches("[A-Z][a-z]* [A-Z][a-z]*", name)) {
-            validation.setValid(false);
-            validation.getErrors().add(Constant.NAME_ERROR_MSG);
+        if (nullOrEmptyString.test(name) ) {
+            assignError(validation, false, Constant.NAME_ERROR_MSG);
+
+        } else if (!Pattern.matches("[A-Z][a-z]* [A-Z][a-z]*", name)) {
+            assignError(validation, false, Constant.NAME_ERROR_MSG);
 
             StringBuffer result = new StringBuffer();
             List<String> filtered = Arrays.asList(name.trim().split(" ")).stream().filter(i -> !isTitleName(i)).collect(Collectors.toList());
@@ -91,11 +95,15 @@ public class DataProcessingServiceImpl implements DataProcessingService {
 
     private Validation validatePhone(Validation validation) {
         String phone = validation.getSuggestion().getPhone();
-        if (!Pattern.matches("[0-9]{10}", phone)) {
-            validation.setValid(false);
-            validation.getErrors().add(Constant.PHONE_ERROR_MSG);
-            validation.getSuggestion().setPhone(phone.replaceAll("[^0-9]", "").substring(0, 10));
+        if (nullOrEmptyString.test(phone) ) {
+            assignError(validation, false, Constant.PHONE_ERROR_MSG);
+
+        } else if (!Pattern.matches("[0-9]{10}", phone)) {
+            assignError(validation, false, Constant.PHONE_ERROR_MSG);
+            phone = phone.replaceAll("[^0-9]", "");
+            validation.getSuggestion().setPhone(phone.substring(0, phone.length() < 10 ? phone.length() : 10));
         }
+
         return validation;
     }
 
@@ -103,5 +111,10 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     private boolean isTitleName(String name) {
         return Pattern.matches("[A-Z][a-z]{1,2}[.]", name);
     }
-    
+
+    private Validation assignError(Validation validation, boolean valid, String error) {
+        validation.setValid(valid);
+        validation.getErrors().add(error);
+        return validation;
+    } 
 }

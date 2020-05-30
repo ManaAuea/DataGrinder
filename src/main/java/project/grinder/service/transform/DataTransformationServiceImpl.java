@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
+import project.grinder.Constant;
+
 @Service
 public class DataTransformationServiceImpl implements DataTransformationService {
 
@@ -21,12 +23,12 @@ public class DataTransformationServiceImpl implements DataTransformationService 
         if (value instanceof LinkedHashMap) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = LinkedHashMap.class.cast(value);
-            map.forEach((k, v) -> transformJson(key + '_' + k, v, result));
+            map.forEach((k, v) -> transformJson(key + Constant.JSON_KEY_DELIMITER + k, v, result));
 
         } else if (value instanceof ArrayList) {
             @SuppressWarnings("unchecked")
             ArrayList<Object> list = ArrayList.class.cast(value);
-            IntStream.range(0, list.size()).forEach(idx -> transformJson(key + '_' + idx, list.get(idx), result));
+            IntStream.range(0, list.size()).forEach(idx -> transformJson(key + Constant.JSON_KEY_DELIMITER + idx, list.get(idx), result));
 
         } else {
             result.put(key, value);
