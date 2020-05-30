@@ -2,12 +2,12 @@ package project.grinder.service.process;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
@@ -82,12 +82,15 @@ public class DataProcessingServiceImpl implements DataProcessingService {
             assignError(validation, false, Constant.NAME_ERROR_MSG);
 
             StringBuffer result = new StringBuffer();
-            List<String> filtered = Arrays.asList(name.trim().split(" ")).stream().filter(i -> !isTitleName(i)).collect(Collectors.toList());
-            for (String n: filtered) {
-                result.append(result.length() > 0 ? " " : "");
-                result.append(Character.toString(n.charAt(0)).toUpperCase());
-                result.append(n.substring(1).toLowerCase());  
-            }
+            AtomicInteger index = new AtomicInteger();
+            String[] array = name.trim().split(" ");
+            IntStream.range(0, array.length).forEach(idx -> {
+                if (!isTitleName(array[idx]) && index.getAndIncrement() < 2) {
+                    result.append(result.length() > 0 ? " " : "");
+                    result.append(Character.toString(array[idx].charAt(0)).toUpperCase());
+                    result.append(array[idx].substring(1).toLowerCase());  
+                }
+            });
             validation.getSuggestion().setName(result.toString());
         }
         return validation;
@@ -103,7 +106,6 @@ public class DataProcessingServiceImpl implements DataProcessingService {
             phone = phone.replaceAll("[^0-9]", "");
             validation.getSuggestion().setPhone(phone.substring(0, phone.length() < 10 ? phone.length() : 10));
         }
-
         return validation;
     }
 

@@ -3,12 +3,10 @@ package project.grinder.model;
 import java.util.List;
 
 public class Validation {
-
+    
     private boolean valid;
     private List<String> errors;
     private User user;
-
-    public Validation() {}
 
     public Validation(boolean valid, List<String> errors, User user) {
         this.valid = valid;
@@ -39,5 +37,4 @@ public class Validation {
     public void setSuggestion(User user) {
 		this.user = user;
     }
-    
 }
