@@ -1,5 +1,7 @@
 package project.grinder.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +22,8 @@ public class DataProcessingController {
 
     @PostMapping("/sort")
 	public Sorting sort(@RequestBody Sorting sorting) {
-		return dataProcessingService.sortInteger(sorting.getData());
+    	List<Integer> sorted = dataProcessingService.sortInteger(sorting.getData());
+    	return new Sorting(sorted);
     }
 
     @PostMapping("/validate")

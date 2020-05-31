@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import project.grinder.Constant;
-import project.grinder.model.Sorting;
 import project.grinder.model.User;
 import project.grinder.model.Validation;
 
@@ -22,8 +21,8 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     final Predicate<String> nullOrEmptyString = str -> str == null || str.trim().isEmpty();
 
     @Override
-    public Sorting sortInteger(List<Integer> list) {
-        return new Sorting(bubbleSort(list, true));
+    public List<Integer> sortInteger(List<Integer> list) {
+        return bubbleSort(list, true);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
 
     private Validation validateId(Validation validation) {
         int id = validation.getSuggestion().getId();
-        if (id < 0) {
+        if (id < 1) {
             assignError(validation, false, Constant.ID_ERROR_MSG);
             validation.getSuggestion().setId(Math.abs(id)); 
         }
