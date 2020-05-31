@@ -1,4 +1,4 @@
-package project.grinder.service;
+package project.grinder.service.process;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,8 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import project.grinder.model.User;
 import project.grinder.model.Validation;
-import project.grinder.service.process.DataProcessingService;
-import project.grinder.service.process.DataProcessingServiceImpl;
 
 @SpringBootTest
 public class DataProcessingServiceImplTest {
