@@ -11,6 +11,25 @@ public class Record {
     private String date;
 
     public Record() {}
+    
+    public Record(int id, String name, String phone) {
+        this.item = null;
+        this.amount = 0;
+        this.price = 0.0;
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.date = null;
+    }
+
+    public Record(String item, int amount, double price, int id, String name, String phone) {
+        this.item = item;
+        this.amount = amount;
+        this.price = price;
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+    }
 
     public String getItem() {
         return this.item;
