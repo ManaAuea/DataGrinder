@@ -1,0 +1,11 @@
+{
+	"num": 87451,
+	"text": "Woo Hoo!",
+	"tel": { "main": "084513547", "second": "09854125436" },
+	"A": { "B": { "C" : { "D": "E" } } },
+	"member": ["John", "Mary"],
+	"address": [{ "country": "TH", "city": "Bangkok" }, { "country": "US", "city": "Sitka" }],
+	"machine": [true, { "primary": "MAC-25436" }, { "reserve": "MAC-87451" }],
+	"first": { "second": [{ "thrid" : true }, { "forth": false }, { "fifth": true } ] },
+	"a": { "b": [{ "c": "d", "e": "f" }, { "g": ["h", "i", "j"], "k": [{ "l": "m" }, {"n": [{ "o": "p", "q": "r", "s": "t" }, "u", "v"] } ], "w": "x", "y": ["z"] }]}
+}

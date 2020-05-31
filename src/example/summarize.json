@@ -1,0 +1,24 @@
+{
+	"05-10-2020": [
+		{ "item": "Pen", "amount": 2, "price": 80.9, "id": 7845, "name": "John", "phone": "0125478541" },
+		{ "item": "Pencil", "amount": 1, "price": 50.52, "id": 7845, "name": "John", "phone": "0125478541" },
+		{ "item": "Book", "amount": 1, "price": 100.2, "id": 84524, "name": "Mary", "phone": "0254589658" },
+		{ "item": "Pen", "amount": 3, "price": 250.54, "id": 3332, "name": "Vicent", "phone": "0214589632" },
+		{ "item": "Rubber", "amount": 1, "price": 30.24, "id": 886, "name": "Alfred", "phone": "5210145236" }
+	],
+	"05-09-2020": [
+		{ "item": "Cutter", "amount": 1, "price": 180.63, "id": 7845, "name": "John", "phone": "0125478541" },
+		{ "item": "Paper", "amount": 50, "price": 10.25, "id": 3332, "name": "Vicent", "phone": "5210145236" },
+		{ "item": "Rubber", "amount": 1, "price": 30.24, "id": 985, "name": "Smith", "phone": "02365898547" },
+		{ "item": "Pen", "amount": 15, "price": 47.12, "id": 3332, "name": "Vicent", "phone": "5210145236" }
+	],
+	"05-08-2020": [
+		{ "item": "Ruler", "amount": 1, "price": 45.21, "id": 7845, "name": "John", "phone": "0125478541" },
+		{ "item": "Pencil", "amount": 2, "price": 35.52, "id": 3332, "name": "Vicent", "phone": "5210145236" },
+		{ "item": "Pen", "amount": 2, "price": 81.25, "id": 84524, "name": "Mary", "phone": "0254589658" },
+		{ "item": "Pencil", "amount": 5, "price": 50.23, "id": 985, "name": "Smith", "phone": "02365898547" },
+		{ "item": "Borad", "amount": 2, "price": 322.14, "id": 3332, "name": "Vicent", "phone": "5210145236" },
+		{ "item": "Ball", "amount": 1, "price": 500.23, "id": 985, "name": "Smith", "phone": "02365898547" }
+	],
+	"05-07-2020": []
+}
