@@ -30,22 +30,6 @@ public class DataTransformationServiceImpl implements DataTransformationService 
         return flatJson;
     }
 
-    private void transformJson(String key, Object value, Map <String, Object> result) {
-        if (value instanceof LinkedHashMap) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = LinkedHashMap.class.cast(value);
-            map.forEach((k, v) -> transformJson(key + Constant.JSON_KEY_DELIMITER + k, v, result));
-
-        } else if (value instanceof ArrayList) {
-            @SuppressWarnings("unchecked")
-            ArrayList<Object> list = ArrayList.class.cast(value);
-            IntStream.range(0, list.size()).forEach(idx -> transformJson(key + Constant.JSON_KEY_DELIMITER + idx, list.get(idx), result));
-
-        } else {
-            result.put(key, value);
-        }
-    }
-
     @Override
     public Map<Integer, Summary> summarizeRecord(Map<String, List<Record>> records) {
         List<Record> rec = new LinkedList<Record>();
@@ -64,19 +48,35 @@ public class DataTransformationServiceImpl implements DataTransformationService 
             )
         );
         
-        rec.forEach(r -> {
-            Summary sum = summary.get(r.getId());
-            Map<LocalDate, List<Order>> orderMap = sum.getOrder();
-            LocalDate date = LocalDate.parse(r.getDate(), DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-            Order order = new Order(r.getItem(), r.getAmount(), r.getPrice());
-            if (orderMap.containsKey(date)) {
-                orderMap.get(date).add(order);
-            } else {
-                orderMap.put(date, Stream.of(order).collect(Collectors.toList()));
-            }
-            sum.setTotalAmount(sum.getTotalAmount() + (r.getPrice() * r.getAmount()));
-        });
-
+        rec.forEach(r -> transformOrder(r, summary.get(r.getId())));
         return summary;
+    }
+
+    private void transformOrder(Record record, Summary summary) {
+        Map<LocalDate, List<Order>> orderMap = summary.getOrder();
+        LocalDate date = LocalDate.parse(record.getDate(), DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        Order order = new Order(record.getItem(), record.getAmount(), record.getPrice());
+        if (orderMap.containsKey(date)) {
+            orderMap.get(date).add(order);
+        } else {
+            orderMap.put(date, Stream.of(order).collect(Collectors.toList()));
+        }
+        summary.setTotalAmount(summary.getTotalAmount() + (record.getPrice() * record.getAmount()));
+    }
+
+    private void transformJson(String key, Object value, Map <String, Object> result) {
+        if (value instanceof LinkedHashMap) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = LinkedHashMap.class.cast(value);
+            map.forEach((k, v) -> transformJson(key + Constant.JSON_KEY_DELIMITER + k, v, result));
+
+        } else if (value instanceof ArrayList) {
+            @SuppressWarnings("unchecked")
+            ArrayList<Object> list = ArrayList.class.cast(value);
+            IntStream.range(0, list.size()).forEach(idx -> transformJson(key + Constant.JSON_KEY_DELIMITER + idx, list.get(idx), result));
+
+        } else {
+            result.put(key, value);
+        }
     }
 }
