@@ -1,6 +1,5 @@
 package project.grinder.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +12,11 @@ import project.grinder.service.process.DataProcessingService;
 @RestController
 public class DataProcessingController {
 
-    @Autowired
-    DataProcessingService dataProcessingService;
+	private final DataProcessingService dataProcessingService;
+	
+	public DataProcessingController(DataProcessingService dataProcessingService) {
+        this.dataProcessingService = dataProcessingService;
+    }
 
     @PostMapping("/sort")
 	public Sorting sort(@RequestBody Sorting sorting) {
