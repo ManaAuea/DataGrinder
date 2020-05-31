@@ -2,7 +2,6 @@ package project.grinder.service.transform;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,15 +31,15 @@ public class DataTransformationServiceImpl implements DataTransformationService 
 
     @Override
     public Map<Integer, Summary> summarizeRecord(Map<String, List<Record>> records) {
-        List<Record> rec = new LinkedList<Record>();
+        List<Record> recordList = new LinkedList<Record>();
         for (Map.Entry<String, List<Record>> entry : records.entrySet()) {
-            rec.addAll(entry.getValue().stream().map(r -> {
+            recordList.addAll(entry.getValue().stream().map(r -> {
                 r.setDate(entry.getKey());
                 return r;
             }).collect(Collectors.toList()));
         }
 
-        Map<Integer, Summary> summary =  rec.stream().collect(
+        Map<Integer, Summary> summary =  recordList.stream().collect(
             Collectors.toMap(
                 r -> r.getId(),
                 r ->  new Summary(new User(r.getId(), r.getName(), r.getPhone()), new HashMap<LocalDate, List<Order>>(), 0.0),
@@ -48,7 +47,7 @@ public class DataTransformationServiceImpl implements DataTransformationService 
             )
         );
         
-        rec.forEach(r -> transformOrder(r, summary.get(r.getId())));
+        recordList.forEach(r -> transformOrder(r, summary.get(r.getId())));
         return summary;
     }
 
@@ -65,14 +64,14 @@ public class DataTransformationServiceImpl implements DataTransformationService 
     }
 
     private void transformJson(String key, Object value, Map <String, Object> result) {
-        if (value instanceof LinkedHashMap) {
+        if (value instanceof Map) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = LinkedHashMap.class.cast(value);
+            Map<String, Object> map = Map.class.cast(value);
             map.forEach((k, v) -> transformJson(key + Constant.JSON_KEY_DELIMITER + k, v, result));
 
-        } else if (value instanceof ArrayList) {
+        } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
-            ArrayList<Object> list = ArrayList.class.cast(value);
+            List<Object> list = List.class.cast(value);
             IntStream.range(0, list.size()).forEach(idx -> transformJson(key + Constant.JSON_KEY_DELIMITER + idx, list.get(idx), result));
 
         } else {
