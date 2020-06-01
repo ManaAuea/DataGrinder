@@ -55,29 +55,29 @@ public class DataTransformationServiceImplTest {
 
             // Json with multiple level depth
             Arguments.of(
-                createStrMap(new String[][] { { "A_B", "C" }, { "A_D", "E" } }),
-                singletonMap("A", createStrMap(new String[][] { { "B", "C" }, { "D", "E" } }))
+                createMap(new String[][] { { "A_B", "C" }, { "A_D", "E" } }),
+                singletonMap("A", createMap(new String[][] { { "B", "C" }, { "D", "E" } }))
             ),
             Arguments.of(singletonMap("A_B_C", "D"), singletonMap("A", singletonMap("B", singletonMap("C", "D")))),
 
             // Json with list and multiple level depth
             Arguments.of(
-                createStrMap(new String[][] { { "A_0", "B" }, { "A_1", "C" } }),
+                createMap(new String[][] { { "A_0", "B" }, { "A_1", "C" } }),
                 singletonMap("A", asList("B", "C"))
             ),
             Arguments.of(
-                createStrMap(new String[][] { { "A_0_B", "C" }, { "A_1_D", "E" } }),
+                createMap(new String[][] { { "A_0_B", "C" }, { "A_1_D", "E" } }),
                 singletonMap("A", asList(singletonMap("B", "C"), singletonMap("D", "E")))
             ),
             Arguments.of(
-                createStrMap(new String[][] { { "A_B_0_C", "D" }, { "A_B_1_E", "F" }, { "A_B_1_G", "H" } }),
+                createMap(new String[][] { { "A_B_0_C", "D" }, { "A_B_1_E", "F" }, { "A_B_1_G", "H" } }),
                 singletonMap(
                     "A",
                     singletonMap(
                         "B",
                         Arrays.asList(
                             singletonMap("C", "D"),
-                            createStrMap(new String[][] { { "E", "F" }, { "G", "H" } })
+                            createMap(new String[][] { { "E", "F" }, { "G", "H" } })
                         )
                     )
                 )
@@ -120,7 +120,7 @@ public class DataTransformationServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("summarizeOrderTestData")
-    @DisplayName("Should map order data from multiple records to each user")
+    @DisplayName("Should map order data from multiple records for each user")
     void summarizeOrderTest(Map<Map<Integer, String>, Order> expect, Map<String, List<Record>> records) {
         Map<Integer, Summary> summary = service.summarizeRecord(records);
 
@@ -184,7 +184,44 @@ public class DataTransformationServiceImplTest {
         );
     }
 
-    private static Map<String, String> createStrMap(String[][] members) {
+    @ParameterizedTest
+    @MethodSource("summarizeTotalAmountTestData")
+    @DisplayName("Should summarize total amount from multiple records for each user")
+    void summarizeTotalAmountTest(Map<Integer, Double> expect, Map<String, List<Record>> records) {
+        Map<Integer, Summary> summary = service.summarizeRecord(records);
+
+        expect.forEach((id, total) -> {
+            Summary sum = summary.get(id);
+            assertNotNull(sum);
+            assertEquals(total, sum.getTotalAmount());
+        });
+    }
+
+    static Stream<Arguments> summarizeTotalAmountTestData() {
+        int USER_A_ID = 1;
+        int USER_B_ID = 2;
+        Record recordA1 = new Record("itemA1", 2, 100.50, USER_A_ID, "userA", "0123456789");
+        Record recordA2 = new Record("itemA2", 4, 250.36, USER_A_ID, "userA", "0123456789");
+        Record recordB1 = new Record("itemB1", 3, 200.21, USER_B_ID, "userB", "9876543210");
+        Record recordB2 = new Record("itemB2", 6, 950.15, USER_B_ID, "userB", "9876543210");
+        return Stream.of(
+            Arguments.of(singletonMap(USER_A_ID, 201.0), singletonMap("12-01-2020", asList(recordA1))),
+            Arguments.of(singletonMap(USER_A_ID, 1202.44), singletonMap("12-01-2020", asList(recordA1, recordA2))),
+            Arguments.of(
+                createMap(new Object[][] { { USER_A_ID, 201.0 }, { USER_B_ID, 600.63 } }),
+                singletonMap("12-01-2020", asList(recordA1, recordB1))
+            ),
+            Arguments.of(
+                createMap(new Object[][] { { USER_A_ID, 1202.44 }, { USER_B_ID, 6301.53 } }),
+                Stream.of(
+                    createTestRecordMapEntry("12-01-2020", asList(recordA1, recordB1)),
+                    createTestRecordMapEntry("12-02-2020",asList(recordA2, recordB2))
+                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+            )
+        );
+    }
+
+    private static Map<Object, Object> createMap(Object[][] members) {
         return Stream.of(members).collect(Collectors.toMap(d -> d[0], d -> d[1]));
     }
 
