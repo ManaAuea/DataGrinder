@@ -103,8 +103,8 @@ public class DataTransformationServiceImplTest {
     static Stream<Arguments> summarizeUserTestData() {
         User userA = new User(1, "userA", "0123456789");
         User userB = new User(2, "userB", "9876543210");
-        Record recordA = new Record(1, "userA", "0123456789");
-        Record recordB = new Record(2, "userB", "9876543210");
+        Record recordA = new Record(userA.getId(), userA.getName(), userA.getPhone());
+        Record recordB = new Record(userB.getId(), userB.getName(), userB.getPhone());
         return Stream.of(
             Arguments.of(asList(userA), singletonMap("12-01-2020", asList(recordA))),
             Arguments.of(asList(userA, userB), singletonMap("12-01-2020", asList(recordA, recordB, recordA))),
@@ -149,11 +149,10 @@ public class DataTransformationServiceImplTest {
         Order orderA2 = new Order("itemA2", 4, 250.36);
         Order orderB1 = new Order("itemB1", 3, 200.30);
         Order orderB2 = new Order("itemB2", 6, 950.85);
-        Record recordA1 = new Record("itemA1", 2, 100.50, USER_A_ID, "userA", "0123456789");
-        Record recordA2 = new Record("itemA2", 4, 250.36, USER_A_ID, "userA", "0123456789");
-        Record recordB1 = new Record("itemB1", 3, 200.30, USER_B_ID, "userB", "9876543210");
-        Record recordB2 = new Record("itemB2", 6, 950.85, USER_B_ID, "userB", "9876543210");
-
+        Record recordA1 = new Record(orderA1.getItem(), orderA1.getAmount(), orderA1.getPrice(), USER_A_ID, "userA", "0123456789");
+        Record recordA2 = new Record(orderA2.getItem(), orderA2.getAmount(), orderA2.getPrice(), USER_A_ID, "userA", "0123456789");
+        Record recordB1 = new Record(orderB1.getItem(), orderB1.getAmount(), orderB1.getPrice(), USER_B_ID, "userB", "9876543210");
+        Record recordB2 = new Record(orderB2.getItem(), orderB2.getAmount(), orderB2.getPrice(), USER_B_ID, "userB", "9876543210");
         return Stream.of(
             Arguments.of(
                 singletonMap(singletonMap(USER_A_ID, "12-01-2020"), orderA1),
